@@ -6,7 +6,7 @@ import java.util.PriorityQueue;
 public class ParkingPlace
 {
 
-	private Vehicle parking[][] = new Vehicle[3][5];
+	private Vehicle[][] parking;
 
 	
 	Comparator<Vehicle> VehicleComparator = new Comparator<Vehicle>() {
@@ -24,30 +24,40 @@ public class ParkingPlace
 
 	};
 
-	PriorityQueue<Vehicle> queue = new PriorityQueue<Vehicle>(VehicleComparator);
+	PriorityQueue<Vehicle> queue;
 
-	public void view(){
+	public ParkingPlace(){
 
-		System.out.println("******** parking *******\n");
+		parking = new Vehicle[3][5];
+
+		queue = new PriorityQueue<Vehicle>(VehicleComparator);
+
+	}
+
+	public String view(){
+
+		StringBuffer str = new StringBuffer();
+
+		str.append("******** parking *******\n");
 
 		for(int i=0;i<3;i++)for(int j=0;j<5;j++){
 
 			if(parking[i][j] != null){
 
-				System.out.println("Row :: "+i+" Column :: "+j);
-				parking[i][j].view();
+				str.append("Row :: "+i+" Column :: "+j+"\n");
+				str.append(parking[i][j].view()+"\n");
 
 			}
 
 			else {
 
-				System.out.println("Row :: "+i+" Column :: "+j);
-				System.out.println("Vehicle :: null");
+				str.append("Row :: "+i+" Column :: "+j+"\n");
+				str.append("Vehicle :: null"+"\n");
 			}
 
 		}
 
-		System.out.println("************* queue *********\n");
+		str.append("************* queue *********\n");
 
 		PriorityQueue<Vehicle> tempQueue = new PriorityQueue<Vehicle>(VehicleComparator);
 
@@ -58,7 +68,7 @@ public class ParkingPlace
 
 			v = queue.peek();
 
-			v.view();
+			str.append(v.view());
 
 			queue.remove(v);
 
@@ -67,6 +77,8 @@ public class ParkingPlace
 		}
 
 		queue = tempQueue;
+
+		return str.toString();
 	}
 
 	public int addVehicle(Vehicle v){
@@ -105,6 +117,8 @@ public class ParkingPlace
 			queue.remove(v);
 
 		}
+
+		queue = tempQueue;
 		
 		return false;
 	
@@ -112,8 +126,6 @@ public class ParkingPlace
 
 
 	public void manageQueue(){
-
-		System.out.println("managing queue");
 
 		PriorityQueue<Vehicle> tempQueue = new PriorityQueue<Vehicle>(VehicleComparator);
 
@@ -123,13 +135,8 @@ public class ParkingPlace
 
 		while(queue.size() != 0){
 
-			System.out.println("managing");
-
 			flag = false;
-
 			v = queue.peek();
-			v.view();
-
 
 			if(v.getType() == VehicleType.Truck){
 

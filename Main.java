@@ -1,15 +1,25 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.net.Socket;
+import java.net.ServerSocket;
+import java.net.InetAddress;
+import java.net.SocketAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketException;
+
 
 public class Main{
 
 	private static ParkingPlace p;
 	private static VehicleFactory f;
+	private static ServerSocket svrskt;
 
 	public static void preprocess()throws Exception
 	{
 
 		int n;
+
+		System.out.println("Welcome Admin");
 
 		System.out.println("enter the number of registration numbers to be given to factory");
 
@@ -28,104 +38,9 @@ public class Main{
 
 		f = new VehicleFactory(RegNos);
 		p = new ParkingPlace(); 
-
 			
 	}
-
-	public static int inner_menu() throws Exception
-	{
-
-		System.out.println("\n******** MENU **********\n");
-		System.out.println("View Parking       ::     0");
-		System.out.println("Add Vehicle        ::     1");
-		System.out.println("Remove Vehicle     ::     2");
-		System.out.println("Manage Queue       ::     3");
-		System.out.println("Add Reg Numbers    ::     4");
-		System.out.println("Remove Reg NUmber  ::     5");
-		System.out.println("Exit               ::   default");
-
-		return(new Scanner(System.in).nextInt());
-	}
-
-	public static void menu(){
-
-		boolean continue_ = true;
-
-		Scanner scn = new Scanner(System.in);
-
-		while(continue_){
-
-			try{
-
-				switch(inner_menu()){
-
-					case 0:
-					{
-
-						Main.p.view();
-
-					}break;
-
-					case 1:
-					{
-						Vehicle v =f.getVehicle();
-
-						Main.p.addVehicle(v);
-					
-					}break;
-
-					case 2:
-					{
-
-						System.out.println("enter the registration number of the vehicle to be removed");
-
-						Main.p.removeVehicle(scn.nextInt());
-
-					}break;
-
-					case 3:
-					{
-
-						p.manageQueue();
-
-					}break;
-
-					case 4:
-					{
-
-						System.out.println("enter th Registration number to be added");
-
-						int regNo = scn.nextInt();
-
-						f.addRegistrationNumbers(regNo);
-
-					}break;
-
-					case 5:
-					{
-
-						System.out.println("enter th Registration number to be added");
-						
-						int regNo = scn.nextInt();
-
-						f.removeRegistrationNumbers(regNo);
-
-					}break;
-
-					default: return;
-
-				}
-
-			}
-
-			catch(Exception e){
-
-				System.out.println(e);
-			}
-		}
-
-	}
-
+	
 	public static void main(String args[]){
 
 		System.out.println("\n__________________________________");
@@ -133,9 +48,39 @@ public class Main{
 
 		try{
 
-			preprocess();
-			menu();
+			InetAddress inetAddress = InetAddress.getByName(args[0]);  
+			SocketAddress endPoint = new InetSocketAddress(inetAddress, Integer.parseInt(args[1]));  
 
+			preprocess();
+			
+			svrskt = new ServerSocket();
+
+			svrskt.bind(endPoint);
+
+			Socket skt;
+
+			System.out.println("server is up and running");
+
+			new ParkingManager(Main.p, Main.f, svrskt);
+
+			while(true){
+
+				skt = svrskt.accept();
+
+				new ClientProcessor(Main.p, Main.f,skt);
+
+			}
+
+		}
+
+		catch(ArrayIndexOutOfBoundsException ex){
+
+			System.out.println("Usage < ip adress of server >  < port number >");
+		}
+
+		catch(SocketException ex){
+
+			System.out.println("Closing Server\n");
 		}
 
 		catch(Exception ex){

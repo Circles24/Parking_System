@@ -25,11 +25,10 @@ public abstract class Vehicle implements ParkingClient
 
 	}
 
-	public void view(){
+	public String view(){
 
-		System.out.println("Type :: "+Type);
-		System.out.println("RegNo :: "+RegNo);
-		System.out.println("Priority:: "+getPriority());
+		return "Type :: "+Type+"\n"+"RegNo :: "+RegNo+"\n"+"Priority:: "+getPriority()+"\n";
+		
 	}
 
 }

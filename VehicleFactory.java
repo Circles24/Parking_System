@@ -15,8 +15,6 @@ public class VehicleFactory
 	public VehicleFactory(ArrayList<Integer> RegNos)throws Exception
 	{
 
-		System.out.println("Vehicle factory Creation underway");
-
 		for(int i:RegNos){
 
 			if(present.get(i) == null)present.put(i,true);
@@ -28,7 +26,14 @@ public class VehicleFactory
 
 	}
 
-	private Vehicle getRandomVehicle(){
+	public boolean hasRegNo(int regNo){
+
+		for(int i: RegNos)if(i == regNo)return true;
+
+		return false;
+	}
+
+	public Vehicle getRandomVehicle(){
 
 		int regNo = RegNos.get(0);
 
@@ -47,69 +52,29 @@ public class VehicleFactory
 
 	}
 
-	public Vehicle getVehicle()throws Exception
+	public Vehicle getCustomVehicle(int choice,int regNo,int pri)throws Exception
 	{
 
-		if(RegNos.size() == 0)throw new Exception("Regnos worn out");
+		if(choice > 3 || choice <1 )throw new Exception("wrong choice");
 
-		System.out.println("Random vehicle(0) or Custom vehicle(1)");
+		boolean present = false;
 
-		Scanner sin = new Scanner(System.in);
+		for (int i: RegNos)if(i == regNo)present = true;
 
-		int choice = sin.nextInt();
+		if(!this.hasRegNo(regNo))throw new Exception("Wrong regNo");
 
-		if(choice == 0 ){
+		if(pri <= 0)throw new Exception("Wrong priority");
 
-			return getRandomVehicle();
-		}
+		RegNos.remove(Integer.valueOf(regNo));
 
-		else if(choice == 1){
+		if(choice == 1)return new Car(regNo,pri);
 
-			System.out.println("enter the type of vehicle Truck(0), Car(1), MotorCycle(2)");
+		else if(choice == 2)return new MotorCycle(regNo,pri);
 
-			choice = sin.nextInt();
-
-			if(choice < 0 || choice > 2)throw new Exception("wrong choice");
-
-			System.out.println("choose the registration number");
-
-			for( int i : RegNos ){
-
-				System.out.println(i);
-			}
-
-			int regNoIndex = sin.nextInt();
-
-			if(regNoIndex > RegNos.size() || regNoIndex <= 0 )throw new Exception("wrong regNo Index");
-
-			System.out.println("enter the priority for the vehicle");
-
-			int pri = sin.nextInt(),k=0;
-
-			int regNo = RegNos.get(regNoIndex);
-
-			RegNos.remove(regNoIndex);			
-
-			if(pri < 0)throw  new Exception("wrong priority");
-
-			if(choice == 0)return new Truck(regNo,pri);
-
-			else if(choice == 1)return new Car(regNo,pri);
-
-			else return new MotorCycle(regNo,pri);
-
-		}
-
-		else{
-
-				throw new Exception("wrong choice");
-
-		} 
-
-		
+		else return new Truck(regNo,pri);
 	}
 
-	public void addRegistrationNumbers(int regNo){
+	public void addRegistrationNumber(int regNo){
 
 		if(present.get(regNo) == null){
 
@@ -121,7 +86,7 @@ public class VehicleFactory
 		}
 	}
 
-	public void removeRegistrationNumbers(int RegNo){
+	public void removeRegistrationNumber(int RegNo){
 
 		RegNos.remove(RegNo);
 	}
