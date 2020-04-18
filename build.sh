@@ -1,0 +1,1 @@
+javac src/* -d bin/

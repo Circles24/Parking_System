@@ -2,50 +2,45 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 
-
-public class ClientProcessor extends Thread
-{
+public class ClientProcessor extends Thread {
 
 	ParkingPlace p;
 	VehicleFactory f;
 	Socket skt;
 
-	ClientProcessor(ParkingPlace p,VehicleFactory f,Socket skt){
+	ClientProcessor(ParkingPlace p, VehicleFactory f, Socket skt) {
 
 		this.p = p;
 		this.f = f;
 		this.skt = skt;
 
 		setDaemon(true);
-		this.start(); 
+		this.start();
 
 	}
 
-	
+	public void run() {
 
-	public void run(){
-
-		try{
+		try {
 
 			String mesg;
 
 			int choice;
-			int regNo,pri;
+			int regNo, pri;
 
 			byte[] reading_array = new byte[2048];
 			byte[] writing_array = new byte[2048];
 
 			DataInputStream din = new DataInputStream(skt.getInputStream());
-			DataOutputStream dout = new DataOutputStream(skt.getOutputStream()); 
+			DataOutputStream dout = new DataOutputStream(skt.getOutputStream());
 
-			boolean continue_ = true; 
+			boolean continue_ = true;
 
 			mesg = "\nHii Client Welcome to Our parking Service\n";
 
 			dout.writeBytes(mesg);
 
-			while(continue_){
-
+			while (continue_) {
 
 				mesg = "\n****************  MENU ******************\n";
 				mesg += "Add Custom Vehicle to Queue   ::         1\n";
@@ -53,13 +48,13 @@ public class ClientProcessor extends Thread
 				mesg += "Remove Vehicle from Queue     ::         3\n";
 				mesg += "EXIT                          ::        -1\n";
 
-				try{
+				try {
 
 					dout.writeBytes(mesg);
 
 					choice = din.readInt();
 
-					if (choice == 1){
+					if (choice == 1) {
 
 						mesg = "enter choice MotorCycle(1), Car(2), Truck(3)\n";
 						dout.writeBytes(mesg);
@@ -73,7 +68,7 @@ public class ClientProcessor extends Thread
 						dout.writeBytes(mesg);
 						pri = din.readInt();
 
-						Vehicle v = f.getCustomVehicle(choice,regNo,pri);
+						Vehicle v = f.getCustomVehicle(choice, regNo, pri);
 
 						dout.writeBytes("got the vehicle\n");
 
@@ -83,7 +78,7 @@ public class ClientProcessor extends Thread
 
 					}
 
-					else if (choice == 2){
+					else if (choice == 2) {
 
 						mesg = "adding random vehicle\n";
 						dout.writeBytes(mesg);
@@ -94,31 +89,34 @@ public class ClientProcessor extends Thread
 
 					}
 
-					else if (choice == 3){
+					else if (choice == 3) {
 
 						mesg = "enter the registration number\n";
 						dout.writeBytes(mesg);
 
 						regNo = din.readInt();
 
-						if(p.removeVehicle(Integer.valueOf(regNo)))dout.writeBytes("done\n");
+						if (p.removeVehicle(Integer.valueOf(regNo)))
+							dout.writeBytes("done\n");
 
-						else dout.writeBytes("wrong registration number\n");
-	
+						else
+							dout.writeBytes("wrong registration number\n");
+
 					}
 
-					else throw new Exception("wrong choice\n");
+					else
+						throw new Exception("wrong choice\n");
 
 				}
 
-				catch(ArrayIndexOutOfBoundsException ex){
+				catch (ArrayIndexOutOfBoundsException ex) {
 
 					System.out.println(ex.getMessage());
 
 					dout.writeBytes("Vehicle Registration Number Shortage ");
 				}
 
-				catch(Exception ex){
+				catch (Exception ex) {
 
 					dout.writeBytes(ex.getMessage());
 				}
@@ -127,13 +125,10 @@ public class ClientProcessor extends Thread
 
 		}
 
-			
-		catch(Exception ex){
+		catch (Exception ex) {
 
 			System.out.println(ex);
 		}
-
-
 
 	}
 }

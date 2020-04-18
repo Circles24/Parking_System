@@ -3,19 +3,16 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.Scanner;
 
-public class Client implements Runnable
-{
+public class Client implements Runnable {
 	private Socket skt;
 	private DataInputStream iStream;
 	private DataOutputStream oStream;
 
-
-	public Client(int port)throws Exception
-	{
+	public Client(int port) throws Exception {
 
 		System.out.println("connecting to server");
 
-		skt = new Socket("127.0.0.1",port);
+		skt = new Socket("127.0.0.1", port);
 
 		System.out.println("connection established");
 
@@ -30,51 +27,54 @@ public class Client implements Runnable
 		t.start();
 	}
 
-	public void run()
-	{
+	public void run() {
 
 		String str;
 		Scanner scn = new Scanner(System.in);
 		byte singleByte;
 		int choice;
 
-		try{
+		try {
 
 			boolean continue_ = true;
 
-			while(continue_){
+			while (continue_) {
 
 				choice = scn.nextInt();
 
-				if(choice == -1)return ;
+				if (choice == -1)
+					return;
 
 				oStream.writeInt(choice);
 
 			}
 		}
 
-		catch(Exception ex){
+		catch (Exception ex) {
 
 			System.out.println(ex);
 		}
 
 	}
 
-	public static void main(String args[]){
+	public static void main(String args[]) {
 
-		try{
+		try {
 
-				Client c = new Client(Integer.parseInt(args[0]));
+			new Client(Integer.parseInt(args[0]));
 
 		}
 
-		catch(Exception ex){
+		catch (ArrayIndexOutOfBoundsException ex) {
+
+			System.out.println("Usage :: java Client <ServerPortNo>");
+		}
+
+		catch (Exception ex) {
 
 			System.out.println(ex);
 		}
 
-
 	}
-
 
 }

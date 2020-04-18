@@ -1,4 +1,4 @@
-public interface ParkingClient{
+public interface ParkingClient {
 
 	public VehicleType getType();
 
